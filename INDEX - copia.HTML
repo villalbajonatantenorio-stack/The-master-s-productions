@@ -1,0 +1,2159 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <script src="script.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Master’s productions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background: #000;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* FONDO NEÓN */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, #0f0, #00f, #f0f, #ff0);
+      background-size: 400% 400%;
+      animation: neonBG 15s ease infinite;
+      z-index: -2;
+      opacity: 0.15;
+    }
+
+    @keyframes neonBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* LÍNEAS NEÓN MOVIÉNDOSE */
+    .neon-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .line {
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(180deg, transparent, #0f0, transparent);
+      animation: moveLines 4s linear infinite;
+      opacity: 0.3;
+    }
+
+    .line:nth-child(1) { left: 20%; animation-delay: 0s; }
+    .line:nth-child(2) { left: 40%; animation-delay: 1s; }
+    .line:nth-child(3) { left: 60%; animation-delay: 2s; }
+    .line:nth-child(4) { left: 80%; animation-delay: 3s; }
+
+    @keyframes moveLines {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    /* LOGIN SCREEN */
+    #login-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 1000;
+    }
+
+    #login-box {
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #0f0;
+      box-shadow: 0 0 20px #0f0, 0 0 60px #0f0 inset;
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      animation: zoomIn 1.5s ease;
+    }
+
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #login-box h1 {
+      color: #0f0;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #0f0, 0 0 30px #0f0;
+    }
+
+    input {
+      display: block;
+      margin: 15px auto;
+      padding: 12px;
+      width: 260px;
+      border: none;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 14px;
+      outline: none;
+      background: #111;
+      color: #0f0;
+      box-shadow: 0 0 10px #0f0 inset;
+    }
+
+    button {
+      margin: 15px 10px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #0f0, #0ff);
+      font-weight: bold;
+      color: #000;
+      transition: 0.3s;
+      text-transform: uppercase;
+      box-shadow: 0 0 15px #0f0, 0 0 25px #0ff;
+    }
+
+    button:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 30px #0f0, 0 0 50px #0ff;
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    #main-content {
+      display: none;
+      text-align: center;
+      padding: 50px;
+      animation: fadeInContent 1.5s ease;
+    }
+
+    #main-content h1 {
+      font-size: 30px;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff, 0 0 30px #0f0;
+    }
+
+    #main-content p {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    @keyframes fadeInContent {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo de líneas -->
+  <div class="neon-lines">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </div>
+
+  <!-- Pantalla de Login -->
+  <div id="login-screen">
+    <div id="login-box">
+      <h1>🪪inicio de seccion🪪</h1>
+      <input type="text" id="username" placeholder="Usuario">
+      <input type="password" id="password" placeholder="Contraseña">
+      <button onclick="login()">Ingresar</button>
+      <button onclick="register()">Registrarse</button>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      let user = document.getElementById('username').value;
+      let pass = document.getElementById('password').value;
+
+      if(user && pass) {
+        document.getElementById('login-screen').style.display = "none";
+        document.getElementById('main-content').style.display = "block";
+      } else {
+        alert("⚠️ Debes ingresar usuario y contraseña gamer ⚠️");
+      }
+    }
+
+    function register() {
+      alert("🎉 Registro exitoso. Ahora puedes ingresar al mundo gamer épico.🎉");
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio Gamer Pro con Voz</title>
+  <style>
+    /* Fuente gamer */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #0a0a0f, #000000);
+      color: #00fff7;
+      overflow-x: hidden;
+    }
+
+    /* Fondo animado con líneas neón */
+    .neon-lines {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .line {
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(180deg, transparent, #00fff7, transparent);
+      animation: move 5s linear infinite;
+    }
+
+    .line:nth-child(odd) {
+      animation-duration: 7s;
+      background: linear-gradient(180deg, transparent, #ff00ff, transparent);
+    }
+
+    @keyframes move {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(100%); }
+    }
+
+    /* Botón circular gamer */
+    .gamer-btn {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00fff7, #ff00ff);
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 25px #00fff7, 0 0 50px #ff00ff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      z-index: 10;
+    }
+
+    .gamer-btn:hover {
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 0 35px #00fff7, 0 0 70px #ff00ff, 0 0 90px #00fff7;
+    }
+
+    /* Ventana emergente con info */
+    .info-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 80%;
+      max-width: 700px;
+      background: rgba(10, 10, 20, 0.95);
+      border: 2px solid #00fff7;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 30px #ff00ff;
+      color: #fff;
+      text-align: center;
+      transition: transform 0.4s ease-in-out;
+      z-index: 20;
+    }
+
+    .info-box.active {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .info-box h2 {
+      color: #00fff7;
+      margin-bottom: 10px;
+    }
+
+    .info-box p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .close-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #ff00ff, #00fff7);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 0 15px #00fff7;
+      transition: transform 0.2s ease;
+    }
+
+    .close-btn:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo con líneas neon -->
+  <div class="neon-lines">
+    <div class="line" style="left:10%;"></div>
+    <div class="line" style="left:30%;"></div>
+    <div class="line" style="left:50%;"></div>
+    <div class="line" style="left:70%;"></div>
+    <div class="line" style="left:90%;"></div>
+  </div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #0a0a0f;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 2rem;
+      text-shadow: 0 0 15px cyan, 0 0 30px magenta;
+    }
+
+  </style></head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Gamer con Música</title>
+  <style>
+    /* Fondo reactivo gamer */
+   body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: #000;
+  color: #fff;
+  overflow-x: hidden; /* Oculta scroll solo horizontal */
+  overflow-y: auto;   /* Activa scroll vertical */
+}
+
+
+    #music-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle, #00ffcc, #0066ff, #000);
+      z-index: -1;
+      transition: background 0.3s ease;
+    }
+
+    /* Controles gamer */
+    #music-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #0ff;
+      border-radius: 15px;
+      box-shadow: 0 0 15px #0ff;
+    }
+
+    #music-controls h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      color: #0ff;
+      text-shadow: 0 0 10px #00f;
+    }
+
+    #song-selector, #music-btn, #stop-btn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #song-selector {
+      background: #111;
+      color: #0ff;
+      border: 2px solid #0ff;
+    }
+
+    #music-btn {
+      background: #0ff;
+      color: #000;
+      font-weight: bold;
+      box-shadow: 0 0 10px #0ff;
+    }
+
+    #stop-btn {
+      background: #f00;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 0 10px #f00;
+    }
+
+    /* Animación reactiva gamer */
+    .pulse {
+      animation: pulseGlow 0.6s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from {
+        background: radial-gradient(circle, #0ff, #0066ff, #000);
+      }
+      to {
+        background: radial-gradient(circle, #ff00ff, #6600ff, #000);
+      }
+    }
+  </style>
+</head>
+<body>
+  </nav>
+  </header>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Master’s Productions | Manual de Convivencia Gamificado</title>
+  <meta name="description" content="The Master’s Productions: empresa educativa-gamer que transforma el Manual de Convivencia en experiencias interactivas y juegos."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- AOS Animations -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <!-- Swiper (slider) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" /> <style>
+    :root{
+      /* Paleta corporativa */
+      --yellow:#FFD700; /* Amarillo principal */
+      --green:#18C22E; /* Verde principal (ligeramente más intenso) */
+      --blue:#1E90FF; /* Azul apoyo */
+      --red:#FF3B3B; /* Rojo acento */
+      --white:#FFFFFF;
+      --black:#0c0c0c;
+      --dark:#111111;
+      --muted:#9aa0a6;
+
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --shadow-soft:0 6px 20px rgba(0,0,0,.25);
+
+      --maxw:1200px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--dark);color:var(--white);font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto;scroll-behavior:smooth}
+
+    /* ===== LOADER ===== */
+    #loader{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(135deg, #0b0b0b 0%, #151515 100%);z-index:9999}
+    .loader-logo{display:flex;flex-direction:column;align-items:center;gap:.8rem}
+    .logo-mark{width:68px;height:68px;border-radius:20px;background:conic-gradient(from 0deg, var(--yellow), var(--green), var(--blue), var(--yellow));animation:spin 1.5s linear infinite;box-shadow:0 0 40px rgba(255,215,0,.35)}
+    .loader-text{font-weight:800;letter-spacing:.5px;opacity:.9}
+    .loader-bar{width:220px;height:8px;border-radius:999px;background:#2a2a2a;overflow:hidden;box-shadow:var(--shadow-soft)}
+    .loader-bar::after{content:"";display:block;height:100%;width:40%;background:linear-gradient(90deg,var(--yellow),var(--green));animation:load 1.6s ease-in-out infinite}
+    @keyframes spin{to{transform:rotate(1turn)}}
+    @keyframes load{0%{transform:translateX(-100%)}50%{transform:translateX(120%)}100%{transform:translateX(220%)}}
+
+    /* ===== NAV ===== */
+    header{position:sticky;top:0;z-index:1000;background:rgba(0, 0, 0, 0.7);backdrop-filter:blur(8px);border-bottom:1px solid rgba(224, 216, 216, 0.06)}
+    .nav{max-width:var(--maxw);margin:auto;display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem}
+    .brand{display:flex;align-items:center;gap:.7rem;font-weight:800}
+    .brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--yellow),var(--green));box-shadow:0 0 12px rgba(24,194,46,.5)}
+    .nav a{color:var(--white);text-decoration:none;margin:0 .7rem;font-weight:600;opacity:.85}
+    .nav a:hover{opacity:1}
+    .cta{background:linear-gradient(90deg,var(--yellow),var(--green));color:#111;padding:.55rem 1rem;border:none;border-radius:999px;font-weight:800;cursor:pointer;box-shadow:var(--shadow-soft);transition:.25s transform}
+    .cta:hover{transform:translateY(-2px)}
+
+    /* ===== THEME TOGGLE ===== */
+    .modes{display:flex;gap:.6rem;align-items:center}
+    .toggle{position:relative;width:56px;height:30px;background:#000000;border-radius:999px;cursor:pointer}
+    .toggle i{position:absolute;inset:3px auto auto 3px;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),var(--green));transition:.25s left}
+    body.gamer .toggle i{left:29px}
+
+    /* ===== HERO ===== */
+    .hero{position:relative;min-height:92vh;display:grid;place-items:center;text-align:center;overflow:hidden}
+
+    /* SLOT de imagen de fondo principal */
+    /* ➜ Para cambiar la imagen del HERO, reemplace la URL de background-image abajo */
+    .hero::before{content:"";position:absolute;inset:0;background-image:url('img/asus\ pro.jpg'); /* ← PON AQUÍ TU IMAGEN */
+      background-size:cover;background-position:center;filter:brightness(.45) contrast(1.1)}
+
+    /* Capa partículas */
+    #tsparticles{position:absolute;inset:0;pointer-events:none}
+
+    .hero-inner{position:relative;z-index:2;max-width:950px;padding:2rem}
+    .eyebrow{display:inline-block;padding:.25rem .6rem;border:1px solid rgba(255,255,255,.25);border-radius:999px;font-size:.8rem;opacity:.9}
+    h1{font-size:clamp(2rem,5vw,3.5rem);margin:.8rem 0;background:linear-gradient(90deg,var(--yellow),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(24,194,46,.25)}
+    .sub{color:#e6e6e6;opacity:.92}
+    .hero-actions{margin-top:1.3rem;display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+    .btn{position:relative;isolation:isolate;border:none;border-radius:999px;padding:.9rem 1.1rem;font-weight:800;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--yellow),var(--green));color:#111}
+    .btn-ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.18)}
+    .btn:active{transform:translateY(1px)}
+
+    /* efecto partículas on-click */
+    .click-pop{position:absolute;border-radius:50%;pointer-events:none;inset:auto}
+
+    /* ===== SECCIONES GENERALES ===== */
+    section{padding:80px 16px}
+    .wrap{max-width:var(--maxw);margin:auto}
+    .grid{display:grid;gap:24px}
+    .two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+
+    /* ===== SLOTs de imágenes de secciones ===== */
+    /* Cambia estas URLs por tus imágenes oficiales */
+    .slot-nosotros{background-image:url('img/gamer.jpg')} /* ← PON TU IMAGEN */
+    .slot-mision{background-image:url('img/npc.webp')} /* ← PON TU IMAGEN */
+    .slot-servicios{background-image:url('img/pcs.webp')} /* ← PON TU IMAGEN */
+    .slot-proyectos{background-image:url('img/asus_pro.jpg')} /* ← PON TU IMAGEN */
+    .slot-equipo{background-image:url('img/neon-gaming-p4qajx0txjgc94yq.webp')} /* ← PON TU IMAGEN */
+    .slot-blog{background-image:url('img/equipo.jpg')} /* ← PON TU IMAGEN */
+
+    .slot{min-height:260px;border-radius:var(--radius);background-size:cover;background-position:center;filter:brightness(.85);box-shadow:var(--shadow)}
+
+    /* ===== NOSOTROS ===== */
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:12px}
+    .kpi{background:#141414;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:16px;text-align:center}
+    .kpi strong{font-size:1.4rem;color:var(--yellow)}
+
+    /* ===== MISION/VISION/VALORES ===== */
+    .pill{display:inline-block;padding:.3rem .7rem;border:1px solid rgba(255,255,255,.2);border-radius:999px;font-size:.85rem;margin-bottom:8px}
+    .values{display:flex;gap:12px;flex-wrap:wrap}
+    .value{background:#131313;border:1px solid rgba(255,255,255,.08);padding:10px 14px;border-radius:999px}
+
+    /* ===== SERVICIOS ===== */
+    .service{display:flex;gap:14px;align-items:flex-start}
+    .service i{font-size:1.4rem;color:var(--green)}
+
+    /* ===== PROYECTOS (Swiper) ===== */
+    .swiper{width:100%;height:360px}
+    .swiper-slide{border-radius:16px;overflow:hidden;box-shadow:var(--shadow);position:relative}
+    .slide-img{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.85)}
+    .slide-info{position:absolute;left:0;right:0;bottom:0;padding:16px;background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.8))}
+
+    /* ===== EQUIPO ===== */
+    .member{display:flex;gap:14px;align-items:center}
+    .avatar{width:64px;height:64px;border-radius:14px;background:#222 url('img/engranajes-parte-maquina-color-neon_93675-43994.jpg') center/cover no-repeat;border:1px solid rgba(255,255,255,.08)}
+
+    /* ===== BLOG/NOTICIAS ===== */
+    .post{display:flex;flex-direction:column;gap:10px}
+    .post .thumb{height:160px;border-radius:12px;background:#222 url('img/Apertura-Gaming.jpg') center/cover no-repeat}
+    .post a{color:var(--yellow);text-decoration:none;font-weight:700}
+
+    /* ===== JUEGO (Quiz gamificado) ===== */
+    .game-panel{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+    .badge{padding:.35rem .7rem;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08)}
+
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1200;background:rgba(227, 221, 221, 0.65);backdrop-filter:blur(6px)}
+    .modal.active{display:flex}
+    .modal-card{width:min(680px,92vw);background:#000000;border:1px solid rgba(255,255,255,.1);border-radius:18px;box-shadow:var(--shadow);padding:20px}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .close{background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;padding:.4rem .6rem;cursor:pointer}
+    .question{font-weight:800;margin:10px 0}
+    .choices{display:grid;gap:10px}
+    .choices button{background:#565650;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.7rem;cursor:pointer;text-align:left}
+    .choices button.correct{border-color:var(--green)}
+    .choices button.wrong{border-color:var(--red)}
+    .progress{height:10px;border-radius:999px;background:#222;margin:12px 0;overflow:hidden}
+    .progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--yellow),var(--green))}
+
+    /* ===== CONTACTO ===== */
+    form{display:grid;gap:14px}
+    input, textarea{width:100%;background:#141414;border:1px solid rgba(232, 223, 223, 0.956);border-radius:12px;color:#fff;padding:12px}
+    textarea{min-height:120px}
+    .mini{font-size:.85rem;color:var(--muted)}
+
+    /* ===== FOOTER ===== */
+    footer{border-top:1px solid rgba(255,255,255,.08);padding:30px 16px;background:#0d0d0d}
+    .foot{max-width:var(--maxw);margin:auto;display:grid;gap:12px;grid-template-columns:1.2fr 1fr 1fr}
+    .foot a{color:#d3d3d3;text-decoration:none}
+    .copy{opacity:.75;margin-top:10px}
+    
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width:900px){
+      .two{grid-template-columns:1fr}
+      .three{grid-template-columns:1fr}
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      .foot{grid-template-columns:1fr}
+    }
+    
+    .btn-juego {
+  display: inline-block;
+  padding: 15px 30px;
+  font-size: 22px;
+  font-family: 'monospace';
+  color: #0ff;
+  background: linear-gradient(90deg, rgb(239, 233, 116), rgb(135, 188, 74), rgb(27, 251, 79));
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 0 20px #0ff, 0 0 40px #0f0;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-juego:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px #ff0, 0 0 60px #0ff;
+}
+
+
+
+  </style></head>
+<body>
+
+  <!-- ===== LOADING SCREEN ===== -->
+  <div id="loader" aria-hidden="true">
+    <div class="loader-logo" role="status" aria-label="Cargando sitio">
+      <div class="logo-mark"></div>
+      <div class="loader-text">The Master’s Productions</div>
+      <div class="loader-bar"></div>
+    </div>
+  </div> <!-- ===== NAVBAR ===== --> <header>
+    <nav class="nav">
+      <div class="brand"><div class="mark"></div> The Master’s Productions</div>
+      <div class="modes">
+        <span class="mini">Modo</span>
+        <div class="toggle" id="modeToggle" title="Cambiar modo (Corporativo/Gamer)"><i></i></div>
+        <a href="#contacto" class="cta">Contactar</a>
+      </div>
+        <div style="text-align: center; margin: 40px;">
+  <a href="juego.html" target="_blank" class="btn-juego">🎮 Jugar Manual Quest</a>
+</div>
+  <a href="zylkia.html" target="_blank" class="btn-juego">Hablar con Zylkia</a>
+
+    </nav>
+  </header> <!-- ===== HERO ===== --> <section class="hero" id="inicio">
+    <!-- Partículas -->
+    <div id="tsparticles"></div><div class="hero-inner" data-aos="zoom-out">
+  <span class="eyebrow">Educativa • Gamer • Profesional</span>
+  <h1>Transformamos el Manual de Convivencia en una Aventura Interactiva</h1>
+  <p class="sub">Nacimos para convertir reglas aburridas en misiones, logros y decisiones significativas. Tecnología + juego = aprendizaje que sí engancha.</p>
+  <div class="hero-actions">
+    <button class="btn btn-primary pop" data-open="#modal-game"><i class="fa-solid fa-gamepad"></i> Jugar demo</button>
+    <a class="btn btn-ghost pop" href="#servicios"><i class="fa-solid fa-bolt"></i> Ver servicios</a>
+    <a class="btn btn-ghost pop" href="#proyectos"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
+  </div>
+</div>
+<!-- 🎮 Logo Épico Gamer con voz -->
+<div class="logo-container">
+  <div class="logo-glow">
+    <img src="img/logo.png" alt="The Master's Productions Logo" class="logo-img">
+  </div>
+  <h1 class="logo-text">🎮 The Master’s Productions 🎮</h1>
+  <p class="welcome-text">⚡ Bienvenido a la experiencia educativa gamer que jamás olvidarás ⚡</p>
+</div>
+
+<!-- 🎵 Sonido futurista -->
+<audio id="introSound" src="sounds/intro.mp3"></audio> <!-- 👉 pon aquí tu sonido gamer -->
+
+<style>
+/* Contenedor central */
+.logo-container {
+  text-align: center;
+  margin: 50px auto;
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* Imagen del logo */
+.logo-img {
+  width: 180px;
+  filter: drop-shadow(0 0 25px cyan);
+  animation: pulse 2s infinite, spinGlow 8s linear infinite;
+  border-radius: 50%;
+}
+
+/* Glow épico */
+.logo-glow {
+  display: inline-block;
+  padding: 15px;
+  border-radius: 50%;
+  box-shadow: 0 0 25px cyan, 0 0 50px magenta, 0 0 75px blue;
+  animation: glowCycle 5s infinite alternate;
+}
+
+/* Texto del logo */
+.logo-text {
+  font-size: 2.5rem;
+  margin-top: 20px;
+  color: #00FFFF;
+  text-shadow: 0 0 10px #00FFFF, 0 0 20px #FF00FF, 0 0 30px #00FFFF;
+  animation: flicker 2s infinite;
+}
+
+/* Texto de bienvenida */
+.welcome-text {
+  font-size: 1.3rem;
+  margin-top: 10px;
+  color: #FFD700;
+  text-shadow: 0 0 8px #FFD700, 0 0 15px red;
+  animation: pulseText 3s infinite alternate;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.5);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1);}
+  50% { transform: scale(1.1);}
+}
+
+@keyframes spinGlow {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+@keyframes glowCycle {
+  0% { box-shadow: 0 0 20px cyan, 0 0 40px blue;}
+  50% { box-shadow: 0 0 30px magenta, 0 0 60px red;}
+  100% { box-shadow: 0 0 40px lime, 0 0 70px yellow;}
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 22%, 24%, 55% { opacity: 0.3; }
+}
+
+@keyframes pulseText {
+  from { color: #FFD700; text-shadow: 0 0 8px #FFD700;}
+  to { color: #FF3B3B; text-shadow: 0 0 15px red;}
+}
+</style>
+
+<script>
+// 🎵 Cuando la página cargue
+window.addEventListener("load", () => {
+  const sound = document.getElementById("introSound");
+
+  // Reproducir sonido gamer
+  sound.play().catch(() => {
+    console.log("El navegador bloqueó el autoplay, se activará al primer clic.");
+
+  // Voz narrando el mensaje
+  const message = "Bienvenido a la experiencia educativa gamer que jamás olvidarás.";
+  const utterance = new SpeechSynthesisUtterance(message);
+  utterance.lang = "es-ES"; // Español
+  utterance.pitch = 1.2;
+  utterance.rate = 1.0;
+  utterance.volume = 1;
+  speechSynthesis.speak(utterance);
+});
+</script>
+
+
+  </section> <!-- ===== NOSOTROS ===== --> <section id="nosotros">
+    <div class="wrap grid two" >
+      <div class="card" data-aos="fade-up">
+        <span class="pill">Quiénes somos</span>
+        <h2>El porqué de nuestra empresa</h2>
+        <p>
+          Nacimos de una necesidad real: <strong>transformar un Manual de Convivencia aburrido</strong> en
+          una experiencia entretenida y útil como lo son los videojuegos. Aquí, las normas se vuelven
+          <em>misiones</em>, los acuerdos son <em>logros</em> y el respeto se practica en <em>decisiones interactivas</em>.
+        </p>
+        <div class="kpis">
+          <div class="kpi"><strong>+50</strong><div>Reglas convertidas en retos</div></div>
+          <div class="kpi"><strong>100%</strong><div>Enfoque educativo</div></div>
+          <div class="kpi"><strong>2 Modos</strong><div>Corporativo y Gamer</div></div>
+          <div class="kpi"><strong>∞</strong><div>Escalabilidad de misiones</div></div>
+        </div>
+      </div>
+      <div class="slot slot-nosotros" data-aos="fade-left" aria-label="Imagen Nosotros"></div>
+    </div>
+  </section> <!-- ===== MISION / VISION / VALORES ===== --> <section id="mision-vision">
+    <div class="wrap grid two">
+      <div class="card" data-aos="fade-right">
+        <span class="pill">Misión</span>
+        <h3>Aprender jugando, convivir creando</h3>
+        <p>
+          Diseñamos experiencias digitales que convierten la convivencia en una aventura memorable.
+          Unimos pedagogía, diseño y tecnología para que cada regla se entienda, se practique y se
+          disfrute a través del juego.
+        </p>
+        <div class="values">
+          <span class="value">Gamificación con propósito</span>
+          <span class="value">Accesibilidad y claridad</span>
+          <span class="value">Creatividad responsable</span>
+        </div>
+      </div>
+      <div class="card" data-aos="fade-left">
+        <span class="pill">Visión</span>
+        <h3>Ser el referente latino de convivencia gamificada</h3>
+        <p>
+          ser la plataforma líder en el sector educativo que transforma manuales escolares en
+          experiencias interactivas medibles, integradas al aula y alineadas a estándares educativos.
+        </p>
+        <div class="values">
+          <span class="value">Impacto medible</span>
+          <span class="value">Innovación continua</span>
+          <span class="value">Escalabilidad</span>
+        </div>
+      </div>
+      
+    </div>
+    <div class="wrap grid two" style="margin-top:18px">
+      <div class="slot slot-mision" data-aos="zoom-in" aria-label="Imagen Misión"></div>
+      <div class="card" data-aos="fade-up">
+        <span class="pill">Propuesta de valor</span>
+        <h3>Normas que se viven, no solo se leen</h3>
+        <p>
+          Manual + Juego + Datos: transformamos el documento en misiones interactivas con
+          retroalimentación inmediata y analítica para docentes y directivos.
+        </p>
+      </div>
+    </div>
+  </section> <!-- ===== SERVICIOS ===== --> <section id="servicios">
+    <div class="wrap">
+      <div class="grid two">
+        <div class="card" data-aos="fade-up">
+          <span class="pill">Servicios</span>
+          <h3>Lo que hacemos</h3>
+          <div class="service"><i class="fa-solid fa-globe"></i><div>
+            <strong>Páginas web educativas</strong><br/>
+            Sitios modernos, accesibles, con animaciones y enfoque pedagógico.
+          </div></div>
+          <div class="service"><i class="fa-solid fa-gamepad"></i><div>
+            <strong>Juegos del Manual de Convivencia</strong><br/>
+            Misiones, logros, retos y decisiones para aprender de forma práctica.
+          </div></div>
+          <div class="service"><i class="fa-solid fa-chart-line"></i><div>
+            <strong>Analítica y reportes</strong><br/>
+            Medición de progreso, engagement y resultados por curso y temática.
+          </div></div>
+        </div>
+        <div class="slot slot-servicios" data-aos="fade-left" aria-label="Imagen Servicios"></div>
+      </div>
+    </div>
+  </section> <!-- ===== PROYECTOS / PORTAFOLIO (SLIDER) ===== --> <section id="proyectos">
+    <div class="wrap">
+      <div class="grid two" style="align-items:center">
+        <div>
+          <span class="pill">Portafolio</span>
+          <h3 data-aos="fade-right">Proyectos destacados</h3>
+          <p data-aos="fade-right" data-aos-delay="200">Desliza para ver ejemplos <code></code>.</p>
+        </div>
+        <div class="slot slot-proyectos" data-aos="zoom-in" aria-label="Imagen Proyectos"></div>
+      </div>
+      <div class="swiper" data-aos="fade-up" style="margin-top:18px">
+        <div class="swiper-wrapper">
+          <!-- Slide 1 -->
+          <div class="swiper-slide">
+            <div class="slide-img" style="background-image:url('img/thumb2-4k-rog-metal-logo-artwork-red-neon-lights-grunge-metal-background.jpg')"></div>
+            <div class="slide-info">
+              <strong>Misiones de Respeto</strong>
+              <div>Árbol de decisiones sobre conflictos comunes.</div>
+            </div>
+          </div>
+          <!-- Slide 2 -->
+          <div class="swiper-slide">
+            <div class="slide-img" style="background-image:url('img/Apertura-Gaming.jpg')"></div>
+            <div class="slide-info">
+              <strong>Juego de Roles en Aula</strong>
+              <div>Escenarios interactivos para practicar acuerdos.</div>
+            </div>
+          </div>
+          <!-- Slide 3 -->
+          <div class="swiper-slide">
+            <div class="slide-img" style="background-image:url('img/Mediacion-en-el-Mundo-de-los-Videojuegos-00-1024x574.png')"></div>
+            <div class="slide-info">
+              <strong>Simulación de Comité</strong>
+              <div>Proceso gamificado de mediación y consecuencias.</div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </section> <!-- ===== EQUIPO ===== --> <section id="equipo">
+    <div class="wrap grid two">
+      <div class="card" data-aos="fade-right">
+        <span class="pill">Equipo</span>
+        <h3>Líderes y creadores</h3>
+        <div class="member"><div class="avatar"></div><div>
+          <strong>Jonatan Villalba</strong><br/>
+          Fundador • programador • mucha energia
+        </div></div>
+        <div class="member"><div class="avatar"></div><div>
+          <strong>Fredy yulian</strong><br/>
+          Fundador •  programador • educativo
+        </div></div>
+      </div>
+      <div class="slot slot-equipo" data-aos="zoom-in" aria-label="Imagen Equipo"></div>
+    </div>
+    <div class="video-container">
+  <!-- Miniatura gamer -->
+  <img src="img/logo.png" alt="Ver Video" class="video-thumbnail" onclick="playVideo()">
+
+  <!-- Video oculto hasta que se le da clic -->
+  <video id="gamerVideo" width="640" height="360" controls style="display:none;">
+    <source src="video/Presentación de los Master's Productions!.mp4" type="video/mp4">
+    Tu navegador no soporta el formato de video.
+  </video>
+</div>
+
+<style>
+.video-container {
+  position: relative;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.video-thumbnail {
+  width: 640px;
+  height: 360px;
+  object-fit: cover;
+  border: 3px solid #0ff;
+  border-radius: 12px;
+  box-shadow: 0 0 20px cyan, 0 0 40px magenta;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.video-thumbnail:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px lime, 0 0 60px purple;
+}
+
+video {
+  border: 3px solid #0ff;
+  border-radius: 12px;
+  box-shadow: 0 0 25px cyan, 0 0 50px magenta;
+}
+</style>
+
+<script>
+function playVideo() {
+  document.querySelector(".video-thumbnail").style.display = "none";
+  const video = document.getElementById("gamerVideo");
+  video.style.display = "block";
+  video.play();
+}
+</script>
+
+</script>
+  </section> <!-- ===== BLOG / NOTICIAS ===== --> <section id="blog">
+    <div class="wrap">
+      <span class="pill">Blog & Noticias</span>
+      <h3 data-aos="fade-up">Actualizaciones y contenido educativo</h3>
+      <div class="grid three" style="margin-top:14px">
+        <article class="card post" data-aos="fade-up">
+          <div class="thumb" style="background-image:url('img/cargando-letrero-neon_77399-833.avif')"></div>
+          <strong>Cómo convertir reglas en misiones</strong>
+          <p class="mini">Guía práctica para docentes y estudiantes.</p>
+          <a href="#">Leer más</a>
+        </article>
+        <article class="card post" data-aos="fade-up" data-aos-delay="150">
+          <div class="thumb" style="background-image:url('img/engranajes-parte-maquina-color-neon_93675-43994.jpg')"></div>
+          <strong>Top 5 mecánicas para engagement</strong>
+          <p class="mini">Puntos, logros, decisiones y más.</p>
+          <a href="#">Leer más</a>
+        </article>
+        <article class="card post" data-aos="fade-up" data-aos-delay="300">
+          <div class="thumb" style="background-image:url('img/financial-stock-market-futuristic-neon-bar-chart-the-abstract-world-of-markets-in-3d_9771617.jpg!w700wp')"></div>
+          <strong>Evaluación formativa con datos</strong>
+          <p class="mini">Qué medir y cómo mostrarlo.</p>
+          <a href="#">Leer más</a>
+        </article>
+      </div>
+    </div>
+
+  </section> <!-- ===== JUEGO DEMO (QUIZ) ===== --> <section id="juego" aria-labelledby="juego-title">
+    <div class="wrap">
+      <span class="pill">Demo jugable</span>
+      <h3 id="juego-title" data-aos="fade-right">Mini-quiz del Manual</h3>
+      <p class="mini">Supera el quiz y desbloquea un logro. Tus resultados se guardan en este navegador.</p>
+      <div class="game-panel">
+        <button class="btn btn-primary pop" data-open="#modal-game"><i class="fa-solid fa-play"></i> Iniciar Quiz</button>
+        <span class="badge" id="badge-score">Puntaje: 0/0</span>
+        <span class="badge" id="badge-best">Mejor: 0</span>
+        <span class="badge" id="badge-ach">Logro: —</span>
+      </div>
+    </div>
+    <section id="manual" data-aos="fade-up">
+  <h2 class="title">📘 Manual de Convivencia</h2>
+  <p class="desc">
+    Este es el documento oficial de normas y acuerdos que guían nuestra institución. 
+    Puedes leerlo en línea o descargarlo en PDF.
+  </p>
+  
+
+  <!-- 🔹 Botón gamer de descarga -->
+  <a href="docs/manual-de-convivencia.pdf" download class="btn-download pop">
+    ⬇ Descargar Manual (PDF)
+  </a>
+
+  <!-- 🔹 Visor del Manual (PDF embebido) -->
+  <div class="manual-viewer">
+    <iframe src="docs/manual-de-convivencia.pdf" width="100%" height="600px"></iframe>
+  </div>
+</section>
+
+<style>
+/* Estilo gamer/épico */
+#manual {
+  margin: 60px auto;
+  max-width: 1000px;
+  text-align: center;
+}
+
+#manual .title {
+  font-size: 2rem;
+  color: cyan;
+  text-shadow: 0 0 10px magenta, 0 0 20px cyan;
+  margin-bottom: 15px;
+}
+
+#manual .desc {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+.btn-download {
+  display: inline-block;
+  padding: 12px 25px;
+  background: linear-gradient(45deg, #18C22E, #1E90FF);
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 0 15px #18C22E, 0 0 30px #1E90FF;
+  transition: transform 0.3s ease;
+}
+
+.btn-download:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #FFD700, 0 0 40px #FF3B3B;
+}
+
+.manual-viewer {
+  margin-top: 25px;
+  border: 3px solid cyan;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px cyan, 0 0 40px magenta;
+}
+</style>
+
+  </section> <!-- ===== CONTACTO ===== --> <section id="contacto">
+    <div class="wrap grid two">
+      <div class="card" data-aos="fade-right">
+        <span class="pill">Contacto</span>
+        <h3>Hablemos de tu institución</h3>
+        <p>Agenda una demo o escríbenos. Integramos el juego a las necesidades de tu colegio.</p>
+        <form action="https://formspree.io/f/xrbayprr" method="POST">
+          <!-- Reemplaza XXXXX por tu ID de Formspree o usa mailto:contacto@tudominio.com -->
+          <input required name="nombre" placeholder="Tu nombre" />
+          <input required name="email" type="email" placeholder="Tu correo" />
+          <input name="institucion" placeholder="Institución / Curso" />
+          <textarea required name="mensaje" placeholder="Cuéntanos qué necesitas"></textarea>
+          <button class="btn btn-primary pop" type="submit">Enviar</button>
+          <div class="mini">Al enviar aceptas nuestra política de tratamiento de datos.</div>
+        </form>
+      </div>
+      <div class="card" data-aos="fade-left">
+        <span class="pill">Redes</span>
+        <h3>Conecta con nosotros</h3>
+        <p>
+          <!-- Botón o icono de YouTube -->
+<a href="https://www.youtube.com/@mastersproductions?si=2cXz1dxhc2da2yej" target="_blank" rel="noopener noreferrer">
+  <i class="fab fa-youtube"></i> YouTube
+</a>
+          <a href="https://www.instagram.com/the_masters_productions12?utm_source=qr&igsh=mxmxoxhl1dg5qna==" target="_blank" rel="noopener noreferrer">
+    <i class="fab fa-instagram"></i> Instagram
+  </a>
+        </p>
+        <div class="slot slot-blog" style="min-height:200px" aria-label="Imagen Redes"></div>
+      </div>
+
+    </div>
+  </section> <!-- ===== FOOTER ===== --> <footer>
+    <div class="foot">
+      <div>
+        <div class="brand"><div class="mark"></div> The Master’s Productions</div>
+        <div class="copy mini">&copy; 2025 — Educación gamificada con propósito.</div>
+      </div>
+      <div>
+        <strong>Mapa</strong><br/>
+        <a href="#inicio">Inicio</a><br/>
+        <a href="#nosotros">Nosotros</a><br/>
+        <a href="#servicios">Servicios</a><br/>
+        <a href="#proyectos">Proyectos</a>
+      </div>
+      <div>
+        <strong>Legal</strong><br/>
+        <a href="#">Términos</a><br/>
+        <a href="#">Privacidad</a>
+      </div>
+    </div>
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #0a0a0f;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 2rem;
+      text-shadow: 0 0 15px cyan, 0 0 30px magenta;
+    }
+
+    /* Botón inicial */
+    #musicBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, cyan, magenta);
+      color: #021;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 0 20px cyan, 0 0 40px magenta;
+      transition: transform 0.2s;
+      z-index: 1000;
+    }
+
+    #musicBtn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Contenedor del reproductor */
+    .player-container {
+      display: none;
+      margin-top: 50px;
+      position: relative;
+      padding: 20px;
+    }
+
+    /* Botón ocultar */
+    #closeBtn {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(135deg, red, darkred);
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px red;
+      transition: transform 0.2s;
+    }
+
+    #closeBtn:hover {
+      transform: scale(1.1);
+    }
+
+    audio {
+      margin: 20px;
+      width: 300px;
+      filter: drop-shadow(0 0 15px cyan);
+    }
+
+    /* Visualizador */
+    .visualizer {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 200px;
+      margin: 40px auto;
+      width: 80%;
+      max-width: 600px;
+    }
+
+    .bar {
+      width: 10px;
+      margin: 0 4px;
+      background: linear-gradient(180deg, cyan, magenta, blue);
+      border-radius: 10px;
+      box-shadow: 0 0 20px cyan, 0 0 40px magenta;
+      height: 5px; /* Altura inicial */
+      transition: height 0.1s ease-out;
+    }
+  </style>
+</head>
+
+  <!-- Botón inicial -->
+  <button id="musicBtn">🎵</button>
+
+  <!-- Reproductor -->
+  <div class="player-container" id="playerContainer">
+    <!-- Botón ocultar -->
+    <button id="closeBtn">✖</button>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reproductor Gamer Neon • Pro</title>
+
+  <!-- Fuente gamer -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #050510;
+      --panel: rgba(10,10,18,0.72);
+      --accent1: #00f0ff;
+      --accent2: #ff00f0;
+      --text: #e8faff;
+      --glass: rgba(255,255,255,0.03);
+    }
+
+    /* Reset y layout */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);font-family:'Orbitron',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}
+    /* Full-screen visual canvas behind everything */
+    canvas#visualizer{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:0;
+      pointer-events:none; /* no bloquea clicks */
+    }
+
+    /* Compact player container */
+    .player {
+      position:fixed;
+      right:24px;
+      bottom:24px;
+      width:360px;
+      max-width:92vw;
+      z-index: 5;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius:14px;
+      padding:14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 20px var(--accent1);
+      backdrop-filter: blur(6px);
+    }
+
+    .player .top {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .play-btn {
+      width:72px;height:72px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(circle at 30% 30%, var(--accent1), #2a00ff 60%);
+      color:#001; font-size:28px; border:none; cursor:pointer;
+      box-shadow: 0 4px 18px var(--accent1), inset 0 -6px 20px rgba(0,0,0,0.25);
+      transition: transform .18s ease, box-shadow .2s;
+    }
+    .play-btn:active{ transform: scale(.98) }
+
+    .meta {
+      flex:1;
+      min-width:0;
+    }
+    .title {
+      font-size:14px;
+      color:var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sub {
+      font-size:11px; color:rgba(255,255,255,0.5); margin-top:6px;
+    }
+
+    .controls {
+      display:flex;
+      gap:8px;
+      margin-top:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .btn {
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.07);
+      padding:8px 10px;
+      border-radius:8px;
+      color:var(--text);
+      cursor:pointer;
+      font-size:13px;
+      transition:transform .12s;
+    }
+    .btn:hover{ transform:translateY(-4px) }
+
+    .range {
+      -webkit-appearance:none;
+      appearance:none;
+      height:8px; width:100%;
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      border-radius:8px;
+      outline:none;
+    }
+
+    .row { display:flex; gap:8px; align-items:center; margin-top:12px; }
+    .grow { flex:1 }
+
+    .small {
+      font-size:12px;color:rgba(255,255,255,0.6);
+    }
+
+    /* skin button */
+    .skin-btn { padding:8px;border-radius:10px;background:linear-gradient(90deg,var(--accent1),var(--accent2)); color:#021; font-weight:700; }
+
+    /* file input hidden */
+    input[type=file]{ display:none }
+
+    /* progress text */
+    .time { font-size:12px; color:rgba(255,255,255,0.6); min-width:48px; text-align:center }
+
+    /* small responsive tweaks */
+    @media (max-width:420px){
+      .player{ right:12px; left:12px; width:auto }
+      .play-btn { width:60px;height:60px }
+    }
+  </style>
+</head>
+
+  <!-- Canvas (fondo visual) -->
+  <canvas id="visualizer"></canvas>
+
+  <!-- Player compacto -->
+  <div class="player" role="region" aria-label="Reproductor gamer neon">
+    <div class="top">
+      <button id="btnPlay" class="play-btn" title="Play / Pause">▶</button>
+      <div class="meta">
+        <div class="title" id="trackTitle">Ninguna pista cargada</div>
+        <div class="sub" id="trackSubtitle">Agrega archivos → botón "Agregar"</div>
+      </div>
+    </div>
+
+    <!-- progreso -->
+    <div class="row" style="margin-top:14px">
+      <span class="time" id="timeCurrent">0:00</span>
+      <input id="progress" class="range grow" type="range" min="0" max="100" step="0.1" value="0" aria-label="Progreso">
+      <span class="time" id="timeTotal">0:00</span>
+    </div>
+
+    <div class="controls">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="prevBtn" class="btn">⟲</button>
+        <button id="nextBtn" class="btn">⟲→</button>
+        <button id="addBtn" class="btn">Agregar</button>
+        <input id="fileInput" type="file" accept="audio/*" multiple>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px">
+        <input id="volume" type="range" min="0" max="1" step="0.01" value="0.65" class="range" style="width:80px">
+        <button id="skinBtn" class="skin-btn">Skin</button>
+      </div>
+    </div>
+    <div style="margin-top:10px; display:flex; gap:8px; align-items:center; justify-content:space-between">
+      <div class="small">Playlist: <span id="plCount">0</span></div>
+      <div class="small">Modo: <span id="playMode">Normal</span></div>
+    </div>
+  </div>
+
+  <!-- Elemento audio (oculto) -->
+  <audio id="audio" preload="metadata"></audio>
+
+  <script>
+  /*********************************************************
+   * Reproductor Gamer Neon • JS
+   * - Reaccion visual al audio: barras + partículas + aura
+   * - Visuales quietos (estáticos) hasta que suena el audio
+   * - Smooth: smoothingTimeConstant reduce saltos rápidos
+   * - Manejo playlist desde archivos locales (multiple)
+   *********************************************************/
+
+  (function(){
+    // ---- CONFIGURACIÓN ----
+    const BAR_COUNT = 80;            // cantidad de barras visuales
+    const PARTICLE_COUNT = 120;      // partículas de fondo
+    const SMOOTHING = 0.85;          // suavizado de analyser (0..1)
+    const FFT_SIZE = 2048;           // tamaño FFT (mayor -> más resolución)
+    const LOW_BAND_RATIO = 0.08;     // porcentaje de bins considerados "bajos" (graves)
+    const BASE_PARTICLE_ALPHA = 0.05; // alpha cuando no suena nada
+    const MAX_PARTICLE_ALPHA = 0.9;
+
+    // ---- UI ELEMENTS ----
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d', { alpha: true });
+    let DPR = Math.max(1, window.devicePixelRatio || 1);
+
+    const audio = document.getElementById('audio');
+    const btnPlay = document.getElementById('btnPlay');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const addBtn = document.getElementById('addBtn');
+    const fileInput = document.getElementById('fileInput');
+    const trackTitle = document.getElementById('trackTitle');
+    const trackSubtitle = document.getElementById('trackSubtitle');
+    const progress = document.getElementById('progress');
+    const timeCurrent = document.getElementById('timeCurrent');
+    const timeTotal = document.getElementById('timeTotal');
+    const volume = document.getElementById('volume');
+    const skinBtn = document.getElementById('skinBtn');
+    const plCount = document.getElementById('plCount');
+    const playModeLabel = document.getElementById('playMode');
+
+    // ---- STATE ----
+    let audioCtx = null;
+    let analyser = null;
+    let sourceNode = null;
+    let freqData = null;
+    let bufferLength = 0;
+    let isAnimating = false;
+    let playlist = []; // {name, url, objectURL}
+    let currentIndex = -1;
+    let particles = [];
+    let barsPositions = [];
+    let isPlaying = false;
+    let lastObjectURLs = []; // to revoke when replaced
+
+    // skins
+    const skins = [
+      { accent1:'#00f0ff', accent2:'#ff00f0', bg:'#04040a' },
+      { accent1:'#00ff88', accent2:'#00bb55', bg:'#021006' },
+      { accent1:'#ff4d4d', accent2:'#ffb14d', bg:'#120400' },
+      { accent1:'#b98cff', accent2:'#4d67ff', bg:'#06061a' }
+    ];
+    let currentSkin = 0;
+
+    // ---- Helpers ----
+    function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+    function lerp(a,b,t){ return a + (b-a)*t; }
+    function fmtTime(sec){
+      if (!isFinite(sec) || sec <= 0) return '0:00';
+      const s = Math.floor(sec % 60).toString().padStart(2,'0');
+      const m = Math.floor(sec / 60);
+      return `${m}:${s}`;
+    }
+
+    // ---- Canvas size handling (hi-dpi) ----
+    function resizeCanvas(){
+      DPR = Math.max(1, window.devicePixelRatio || 1);
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      canvas.width = Math.floor(window.innerWidth * DPR);
+      canvas.height = Math.floor(window.innerHeight * DPR);
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+      precomputeBars();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // ---- Precompute static positions (bars + particles) so they don't jitter randomly cada frame ----
+    function precomputeBars(){
+      barsPositions = [];
+      const w = canvas.width / DPR;
+      const h = canvas.height / DPR;
+      const margin = 60;
+      const usableW = Math.max(200, w - (margin*2));
+      const barGap = usableW / BAR_COUNT;
+      const startX = (w - usableW) / 2;
+      for(let i=0;i<BAR_COUNT;i++){
+        barsPositions.push({
+          x: startX + i * barGap,
+          w: Math.max(2, Math.floor(barGap * 0.7))
+        });
+      }
+      // keep particles as-is if already made
+      if (particles.length === 0) {
+        for(let i=0;i<PARTICLE_COUNT;i++){
+          particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            size: Math.random()*3 + 1,
+            baseSize: Math.random()*2 + 0.5,
+            hue: Math.floor(Math.random()*360),
+            alpha: BASE_PARTICLE_ALPHA
+          });
+        }
+      }
+    }
+    precomputeBars();
+
+    // ---- Audio init (must be called from user gesture) ----
+    function initAudioContext(){
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = FFT_SIZE;
+      analyser.smoothingTimeConstant = SMOOTHING;
+      bufferLength = analyser.frequencyBinCount;
+      freqData = new Uint8Array(bufferLength);
+
+      // create source node from media element
+      try {
+        sourceNode = audioCtx.createMediaElementSource(audio);
+        sourceNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      } catch(e){
+        console.warn('No se pudo conectar MediaElementSource:', e);
+      }
+
+      // start animation loop once
+      if (!isAnimating){ isAnimating = true; requestAnimationFrame(visualLoop); }
+    }
+
+    // ---- Playlist management ----
+    function addFilesToPlaylist(fileList){
+      const files = Array.from(fileList);
+      files.forEach(f=>{
+        const url = URL.createObjectURL(f);
+        playlist.push({ name: f.name, url: url, objectURL: url });
+      });
+      plCount.textContent = playlist.length;
+      updatePlaylistUI();
+      if (currentIndex === -1 && playlist.length>0) loadTrack(0);
+    }
+
+    function updatePlaylistUI(){
+      trackSubtitle.textContent = `${playlist.length} pista(s) cargada(s)`;
+    }
+
+    function loadTrack(index){
+      if (index < 0 || index >= playlist.length) return;
+      // revoke previous objectURLs if we want memory cleanup? (we keep them until page unloaded)
+      currentIndex = index;
+      audio.src = playlist[index].url;
+      trackTitle.textContent = playlist[index].name;
+      // reset progress UI until metadata loaded
+      progress.value = 0;
+      timeCurrent.textContent = '0:00';
+      timeTotal.textContent = '0:00';
+      // Start playback (must be within a user gesture to avoid block)
+      audio.play().catch(()=>{ /* autoplay blocked, user will press play */ });
+    }
+
+    function nextTrack(){
+      if (playlist.length===0) return;
+      loadTrack((currentIndex + 1) % playlist.length);
+    }
+    function prevTrack(){
+      if (playlist.length===0) return;
+      loadTrack((currentIndex - 1 + playlist.length) % playlist.length);
+    }
+
+    // ---- UI event wiring ----
+    addBtn.addEventListener('click', ()=> fileInput.click());
+    fileInput.addEventListener('change', e => {
+      addFilesToPlaylist(e.target.files);
+    });
+
+    btnPlay.addEventListener('click', async ()=>{
+      // init audio on first gesture
+      if (!audioCtx) initAudioContext();
+
+      // resume context if suspended (mobile)
+      if (audioCtx && audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+
+      if (audio.paused) {
+        // if no track loaded but playlist exists, load first
+        if (!audio.src && playlist.length>0) loadTrack(0);
+        try {
+          await audio.play();
+        } catch(err){
+          console.warn('play() blocked:', err);
+        }
+      } else {
+        audio.pause();
+      }
+      updatePlayButton();
+    });
+
+    prevBtn.addEventListener('click', ()=>{ prevTrack(); updatePlayButton(); });
+    nextBtn.addEventListener('click', ()=>{ nextTrack(); updatePlayButton(); });
+
+    volume.addEventListener('input', ()=> {
+      audio.volume = parseFloat(volume.value);
+    });
+    // progress seeking
+    let userSeeking = false;
+    progress.addEventListener('input', ()=> {
+      userSeeking = true;
+    });
+    progress.addEventListener('change', ()=> {
+      if (audio.duration) {
+        audio.currentTime = (progress.value / 100) * audio.duration;
+      }
+      userSeeking = false;
+    });
+
+    // update times & next on ended
+    audio.addEventListener('timeupdate', ()=>{
+      if (!userSeeking && audio.duration) {
+        progress.value = (audio.currentTime / audio.duration) * 100;
+      }
+      timeCurrent.textContent = fmtTime(audio.currentTime);
+    });
+    audio.addEventListener('loadedmetadata', ()=>{
+      timeTotal.textContent = fmtTime(audio.duration);
+    });
+    audio.addEventListener('ended', ()=>{
+      nextTrack();
+    });
+
+    // update play/pause UI
+    function updatePlayButton(){
+      btnPlay.textContent = audio.paused ? '▶' : '⏸';
+      isPlaying = !audio.paused && !audio.ended;
+    }
+    audio.addEventListener('play', updatePlayButton);
+    audio.addEventListener('pause', updatePlayButton);
+    audio.addEventListener('seeked', ()=>{ timeCurrent.textContent = fmtTime(audio.currentTime); });
+
+    // keyboard shortcuts: espacio para play/pause
+    window.addEventListener('keydown', (e)=>{
+      if (e.code === 'Space'){
+        e.preventDefault();
+        btnPlay.click();
+      }
+    });
+
+    // skin cycling
+    skinBtn.addEventListener('click', ()=>{
+      currentSkin = (currentSkin + 1) % skins.length;
+      applySkin();
+    });
+    function applySkin(){
+      const s = skins[currentSkin];
+      document.documentElement.style.setProperty('--accent1', s.accent1);
+      document.documentElement.style.setProperty('--accent2', s.accent2);
+      document.documentElement.style.setProperty('--bg', s.bg);
+      // optional: tweak player shadow
+      document.querySelector('.player').style.boxShadow = `0 10px 40px rgba(0,0,0,0.6), 0 0 30px ${s.accent1}`;
+    }
+    applySkin();
+
+    // ---- Visual loop ----
+    // We'll keep an animation loop running once audioCtx initialized to preserve "static until play".
+    function visualLoop(){
+      // schedule next
+      requestAnimationFrame(visualLoop);
+
+      // if analyser not ready, draw static quiet background
+      if (!analyser || !freqData){
+        drawStaticBackground();
+        return;
+      }
+
+      // get frequency data
+      analyser.getByteFrequencyData(freqData);
+
+      // compute some metrics
+      // use lowFreqAvg for bass-driven particles
+      const lowBins = Math.max(2, Math.floor(bufferLength * LOW_BAND_RATIO));
+      let lowSum = 0, totalSum = 0;
+      for(let i=0;i<bufferLength;i++){
+        totalSum += freqData[i];
+        if (i < lowBins) lowSum += freqData[i];
+      }
+      const lowAvg = lowSum / lowBins / 255;     // 0..1
+      const globalAvg = totalSum / bufferLength / 255;
+
+      // clear canvas
+      const width = canvas.width / DPR;
+      const height = canvas.height / DPR;
+      ctx.clearRect(0,0,width,height);
+
+      // soft radial gradient background (subtle neon glow)
+      const g = ctx.createRadialGradient(width*0.5, height*0.45, Math.max(100, 40 + lowAvg*200),
+                                         width*0.5, height*0.45, Math.max(width*0.8, 300));
+      const accent1 = getComputedStyle(document.documentElement).getPropertyValue('--accent1').trim() || '#00f0ff';
+      const accent2 = getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#ff00f0';
+      g.addColorStop(0, hexToRgba(accent1, 0.10 + globalAvg*0.25));
+      g.addColorStop(0.6, hexToRgba(accent2, 0.08 + globalAvg*0.18));
+      g.addColorStop(1, 'rgba(0,0,0,0.85)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,width,height);
+
+      // draw particles (their alpha & size react to lowAvg)
+      ctx.globalCompositeOperation = 'lighter';
+      particles.forEach(p=>{
+        // compute target alpha from lowAvg (bass)
+        const tAlpha = lerp(BASE_PARTICLE_ALPHA, MAX_PARTICLE_ALPHA, clamp(lowAvg*1.6, 0, 1));
+        // smooth alpha change
+        p.alpha = lerp(p.alpha, tAlpha, 0.08);
+
+        // size pulsation based on lowAvg & globalAvg
+        const size = p.baseSize * (1 + (lowAvg*2 + globalAvg*0.6));
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 90%, 60%, ${p.alpha})`;
+        ctx.arc(p.x, p.y, Math.max(0.4, size), 0, Math.PI*2);
+        ctx.fill();
+      });
+      ctx.globalCompositeOperation = 'source-over';
+
+      // draw bars (sample the freqData into BAR_COUNT buckets)
+      const maxBarHeight = Math.min(height*0.45, 420);
+      const step = Math.floor(bufferLength / BAR_COUNT);
+      for(let i=0;i<BAR_COUNT;i++){
+        const pos = barsPositions[i];
+        // compute average for this bar
+        let sum = 0;
+        const start = i * step;
+        const end = Math.min(bufferLength, start + step);
+        for(let b=start;b<end;b++) sum += freqData[b];
+        let avg = (sum / Math.max(1, (end-start))) / 255; // 0..1
+
+        // reduce sensitivity a las frecuencias altas para estética
+        const adjusted = Math.pow(avg, 1.05);
+
+        const barH = adjusted * maxBarHeight;
+        // hue per bar for neon gradient effect
+        const hue = Math.floor((i / BAR_COUNT) * 240) + 120; // cyan->magenta-ish
+        ctx.fillStyle = `hsl(${hue}, 90%, ${Math.floor(40 + adjusted*30)}%)`;
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--accent1').trim();
+        // center bars vertically near bottom area with margin
+        const x = pos.x;
+        const w = pos.w;
+        const y = height - 24 - barH; // 24px bottom margin
+        // rounded rectangle
+        roundRect(ctx, x, y, w, barH, w*0.35, true, false);
+      }
+
+      // central aura ring that pulses with average energy (soft)
+      const auraRadius = 60 + globalAvg * 220;
+      ctx.beginPath();
+      ctx.arc(width*0.5, height*0.45, auraRadius, 0, Math.PI*2);
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = hexToRgba(accent1, 0.14 + globalAvg*0.28);
+      ctx.shadowBlur = 30;
+      ctx.shadowColor = accent1;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // update progress UI (time handled in event listeners but keep safety)
+      if (audio.duration && !isNaN(audio.duration)){
+        timeTotal.textContent = formatTimeSec(audio.duration);
+      }
+
+      // keep playing flag
+      isPlaying = !audio.paused && !audio.ended && audio.currentTime > 0;
+    } // visualLoop
+
+    // Draw static quiet screen when analyser not ready
+    function drawStaticBackground(){
+      const width = canvas.width / DPR;
+      const height = canvas.height / DPR;
+      ctx.clearRect(0,0,width,height);
+      const accent1 = getComputedStyle(document.documentElement).getPropertyValue('--accent1').trim() || '#00f0ff';
+      const accent2 = getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#ff00f0';
+      const g = ctx.createLinearGradient(0,0,width,height);
+      g.addColorStop(0, hexToRgba(accent1, 0.04));
+      g.addColorStop(1, hexToRgba(accent2, 0.02));
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,width,height);
+
+      // subtle dim particles (base alpha)
+      particles.forEach(p=>{
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 85%, 60%, ${p.alpha})`;
+        ctx.arc(p.x, p.y, p.baseSize * 0.8, 0, Math.PI*2);
+        ctx.fill();
+      });
+
+      // faint bars at very low height (idle)
+      const maxBarHeight = Math.min(height*0.15, 120);
+      for(let i=0;i<BAR_COUNT;i++){
+        const pos = barsPositions[i];
+        const barH = Math.random()*6 + (maxBarHeight * 0.02);
+        const hue = Math.floor((i / BAR_COUNT) * 240) + 120;
+        ctx.fillStyle = `hsl(${hue}, 60%, 30%)`;
+        roundRect(ctx, pos.x, height - 24 - barH, pos.w, barH, pos.w*0.35, true, false);
+      }
+    }
+
+    // small helper draw rounded rect
+    function roundRect(c,x,y,w,h,r,fill,stroke){
+      if (r < 0) r = 0;
+      c.beginPath();
+      c.moveTo(x+r,y);
+      c.arcTo(x+w,y,x+w,y+h,r);
+      c.arcTo(x+w,y+h,x,y+h,r);
+      c.arcTo(x,y+h,x,y,r);
+      c.arcTo(x,y,x+w,y,r);
+      c.closePath();
+      if (fill) c.fill();
+      if (stroke) c.stroke();
+    }
+
+    // hex to rgba helper
+    function hexToRgba(hex, alpha){
+      if (!hex) return `rgba(255,255,255,${alpha})`;
+      let h = hex.replace('#','').trim();
+      if (h.length === 3) h = h.split('').map(c=>c+c).join('');
+      const bigint = parseInt(h,16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    // time format
+    function formatTimeSec(t){ if (!isFinite(t)) return '0:00'; const s = Math.floor(t%60).toString().padStart(2,'0'); return Math.floor(t/60)+':'+s; }
+
+    // ---- Utility: start audio context on user click anywhere (optional) ----
+    // Some mobile browsers require user gesture. We'll add a small listener to ensure ctx resumes.
+    window.addEventListener('pointerdown', async function ensureCtxResume(){
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') {
+        try { await audioCtx.resume(); } catch(e){}
+      }
+    }, { once:false });
+
+    // ---- Init: prepare canvas visualization loop only when user interacts by pressing Play or loading files ----
+    // But we start a static draw immediately so it looks polished before interaction
+    drawStaticBackground();
+    // We'll call initAudioContext() on first user gesture (Play or Add files)
+
+    // ---- Extra UI hookup: file drag & drop into page to add files ----
+    window.addEventListener('dragover', (e)=>{ e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+    window.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length){
+        addFilesToPlaylist(e.dataTransfer.files);
+      }
+    });
+
+    // ---- TRACKABLE UI: when metadata loaded, set timeTotal properly ----
+    audio.addEventListener('loadedmetadata', ()=>{
+      timeTotal.textContent = formatTimeSec(audio.duration);
+      // If progressMax is used etc.
+    });
+
+    // ---- When user loads files, ensure audio context created and immediate start if user wants ----
+    fileInput.addEventListener('change', (e)=>{
+      if (e.target.files && e.target.files.length){
+        addFilesToPlaylist(e.target.files);
+        // init audio context on file add (counts as user gesture)
+        initAudioContext();
+      }
+    });
+
+    // ---- When track changes due to loadTrack, ensure visual loop & audioCtx inited ----
+    audio.addEventListener('play', ()=>{
+      if (!audioCtx) initAudioContext();
+      updatePlayButton();
+    });
+
+    // clean up objectURLs on unload
+    window.addEventListener('unload', ()=>{
+      playlist.forEach(p => { if (p.objectURL) URL.revokeObjectURL(p.objectURL); });
+    });
+
+    // ---- small UX: dragging the progress slider shows time preview when dragging (optional) ----
+    progress.addEventListener('input', ()=>{
+      if (audio.duration){
+        const t = (progress.value/100) * audio.duration;
+        timeCurrent.textContent = formatTimeSec(t);
+      }
+    });
+
+    // auto-play first track if audio src set and user presses play
+    // (loadTrack already handles starting)
+
+    // make next/prev cycle
+    // (already hooked)
+
+    // expose global for debug (optional)
+    window.__GAMER_PLAYER = {
+      addFiles: addFilesToPlaylist,
+      next: nextTrack,
+      prev: prevTrack,
+      load: loadTrack,
+      playlist
+    };
+
+    // ---- Start initial static animation so user sees polished background ----
+    if (!isAnimating){
+      isAnimating = true;
+      requestAnimationFrame(visualLoop);
+    }
+
+  })();
+  </script>
+</body>
+</html>
+    <div class="visualizer" id="visualizer">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+  </div>
+
+  <script>
+    const audio = document.getElementById("audio");
+    const visualizer = document.getElementById("visualizer");
+    const bars = visualizer.querySelectorAll(".bar");
+    const playerContainer = document.getElementById("playerContainer");
+    const musicBtn = document.getElementById("musicBtn");
+    const closeBtn = document.getElementById("closeBtn");
+
+    const miniAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = miniAudioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    let source;
+    let connected = false;
+
+    // Abrir reproductor
+    musicBtn.addEventListener("click", () => {
+      playerContainer.style.display = "block";
+      musicBtn.style.display = "none";
+    });
+
+    // Update all references from audioCtx to miniAudioCtx in this script
+
+    // Ocultar reproductor
+    closeBtn.addEventListener("click", () => {
+      playerContainer.style.display = "none";
+      musicBtn.style.display = "block";
+      audio.pause();
+    });
+    audio.addEventListener("play", () => {
+      if (!connected) {
+        source = miniAudioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(miniAudioCtx.destination);
+        connected = true;
+      }
+      miniAudioCtx.resume();
+      animateBars();
+    });
+      animateBars();
+    });
+
+    function animateBars() {
+      requestAnimationFrame(animateBars);
+      analyser.getByteFrequencyData(dataArray);
+
+      bars.forEach((bar, i) => {
+        const value = dataArray[i * 2] / 2;
+        const height = Math.max(5, value);
+        bar.style.height = `${height}px`;
+      });
+    }
+  </script>
+</body>
+</html>
+
+  </div> <!-- ===== LIBRERÍAS ===== --> <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script> <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script> <!-- tsParticles (partículas de fondo) --> <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script> <script>
+    // ===== Loader =====
+    window.addEventListener('load',()=>{
+      setTimeout(()=>document.getElementById('loader').style.display='none', 800);
+    });
+
+    // ===== AOS =====
+    AOS.init({duration:900, once:true, offset:80});
+
+    // ===== Swiper (Proyectos) =====
+    new Swiper('.swiper',{
+      loop:true,
+      pagination:{el:'.swiper-pagination'},
+      navigation:{nextEl:'.swiper-button-next', prevEl:'.swiper-button-prev'},
+    });
+
+    // ===== Modo (Corporativo/Gamer) =====
+    const body=document.body; const toggle=document.getElementById('modeToggle');
+    const savedMode=localStorage.getItem('mode'); if(savedMode==='gamer'){body.classList.add('gamer')}
+    toggle.addEventListener('click',()=>{body.classList.toggle('gamer');localStorage.setItem('mode', body.classList.contains('gamer')?'gamer':'corporate')});
+
+    // Estilos dinámicos por modo
+    const observer=new MutationObserver(()=>{
+      const root=document.documentElement.style;
+      if(body.classList.contains('gamer')){
+        root.setProperty('--green','#32CD32');
+        root.setProperty('--blue','#4aa8ff');
+        document.querySelectorAll('.brand .mark, .cta').forEach(el=>el.style.boxShadow='0 0 16px rgba(50,205,50,.55)');
+      }else{
+        root.setProperty('--green','#18C22E');
+        root.setProperty('--blue','#1E90FF');
+      }
+    });
+    observer.observe(body,{attributes:true});
+
+    // ===== Partículas de fondo (tsparticles) =====
+    (async ()=>{
+      const engine = await tsParticles.load({ id: 'tsparticles', options: {
+        fpsLimit: 60,
+        background: { color: 'transparent' },
+        particles: {
+          number: { value: 60, density: { enable: true, area: 800 } },
+          color: { value: ['#FFD700','#18C22E','#1E90FF','#FF3B3B'] },
+          links: { enable: true, color: '#ffffff', opacity: 0.2 },
+          move: { enable: true, speed: 1 },
+          size: { value: { min: 1, max: 3 } },
+          opacity: { value: 0.6 }
+        },
+        interactivity: {
+          events: { onHover: { enable: true, mode: 'repulse' }, resize: true },
+          modes: { repulse: { distance: 100 } }
+        },
+        detectRetina: true
+      }});
+    })();
+
+    // ===== Pop particles on button click =====
+    document.querySelectorAll('.pop').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        for(let i=0;i<10;i++){
+          const dot=document.createElement('span');
+          dot.className='click-pop';
+          const size=Math.random()*10+6;
+          dot.style.width=size+'px'; dot.style.height=size+'px';
+          dot.style.left=e.offsetX+'px'; dot.style.top=e.offsetY+'px';
+          dot.style.background= `linear-gradient(135deg, var(--yellow), var(--green))`;
+          btn.appendChild(dot);
+          const dx=(Math.random()-0.5)*120; const dy=(Math.random()-0.7)*120;
+          dot.animate([
+            { transform:'translate(0,0)', opacity:1 },
+            { transform:`translate(${dx}px, ${dy}px)`, opacity:0 }
+          ], { duration: 600, easing:'ease-out' }).onfinish=()=>dot.remove();
+        }
+      });
+    });
+
+    // ===== Modal simple =====
+    document.querySelectorAll('[data-open]').forEach(t=>{
+      t.addEventListener('click',()=>document.querySelector(t.dataset.open).classList.add('active'))
+    })
+    document.querySelectorAll('[data-close]').forEach(t=>t.addEventListener('click',()=>t.closest('.modal').classList.remove('active')))
+    document.addEventListener('keydown',e=>{if(e.key==='Escape') document.querySelectorAll('.modal.active').forEach(m=>m.classList.remove('active'))})
+
+    // ===== Quiz del Manual (demo) =====
+    const DEMO_QUESTIONS=[
+      {q:'Si un conflicto escala en el salón, ¿qué haces primero?',
+       a:['Ignorarlo','Pedir pausa y avisar al docente','Gritar más fuerte','Grabarlo para redes'],c:1},
+      {q:'Si ves ciberacoso, la acción correcta es…',
+       a:['Compartir “por chiste”','Reportar y apoyar a la víctima','Unirte para no quedar mal','Nada, no es tu asunto'],c:1},
+      {q:'El uso responsable del celular en clase es…',
+       a:['Solo educativo o con permiso','Siempre, total “multi-tasking”','Cuando acabe la clase','Solo en recreo pero grabando bromas'],c:0},
+    ];
+    let idx=0, score=0, best=parseInt(localStorage.getItem('bestScore')||'0');
+    const qEl=document.getElementById('quiz-q');
+    const cEl=document.getElementById('quiz-c');
+    const prog=document.getElementById('quiz-progress');
+    const status=document.getElementById('quiz-status');
+    const badgeScore=document.getElementById('badge-score');
+    const badgeBest=document.getElementById('badge-best');
+    const badgeAch=document.getElementById('badge-ach');
+
+    function updateBadges(){
+      badgeScore.textContent=`Puntaje: ${score}/${idx}`;
+      badgeBest.textContent=`Mejor: ${best}`;
+      badgeAch.textContent = best>=3? 'Logro: Maestro de Convivencia 🏆' : best>=1? 'Logro: Aprendiz ⭐' : 'Logro: —';
+    }
+
+    function render(){
+      const item=DEMO_QUESTIONS[idx]; if(!item){
+        document.getElementById('modal-game').classList.remove('active');
+        if(score>best){best=score; localStorage.setItem('bestScore', String(best));}
+        idx=0; score=0; updateBadges();
+        return;
+      }
+      qEl.textContent = item.q;
+      cEl.innerHTML='';
+      item.a.forEach((txt,i)=>{
+        const b=document.createElement('button'); b.textContent=txt; b.addEventListener('click',()=>{
+          if(i===item.c){b.classList.add('correct'); score++;}
+          else{b.classList.add('wrong');}
+          setTimeout(()=>{ idx++; prog.style.width=((idx/DEMO_QUESTIONS.length)*100)+'%'; render(); }, 450);
+          updateBadges();
+        });
+        cEl.appendChild(b);
+      });
+      status.textContent = `Pregunta ${idx+1} de ${DEMO_QUESTIONS.length}`;
+      prog.style.width=((idx/DEMO_QUESTIONS.length)*100)+'%';
+      updateBadges();
+    }
+
+    document.querySelectorAll('[data-open="#modal-game"]').forEach(btn=>btn.addEventListener('click',()=>{idx=0;score=0;render();}))
+
+    // ===== Validación Contacto =====
+    document.getElementById('contactForm').addEventListener('submit', (e)=>{
+      const email=e.target.email.value.trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+        e.preventDefault(); alert('Por favor escribe un correo válido.');
+      }
+    });
+    document.getElementById("formRegistro").addEventListener("submit", function(event) {
+  let clave = document.querySelector("input[name='clave']").value;
+  
+  if (clave.length < 6) {
+    alert("La contraseña debe tener al menos 6 caracteres.");
+    event.preventDefault();
+  }
+});
+
+
+  </script></body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎮 Zylkia Pixel — Juego Épico</title>
+<style>
+  @font-face{
+    font-family:'PressStart2P';
+    src: local('Courier New');
+  }
+  :root{
+    --bg1:#05010a;
+    --neon1:#00ffd5;
+    --neon2:#8b5cf6;
+    --accent:#ff4d6d;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),#000);font-family:PressStart2P,monospace}
+  .center{display:flex;align-items:center;justify-content:center;height:100%}
+  canvas{image-rendering: pixelated; display:block; border:6px solid rgba(0,0,0,0.6); box-shadow:0 0 40px rgba(139,92,246,0.12), inset 0 0 30px rgba(0,255,213,0.03); background:linear-gradient(180deg,#071018 0%, #020006 100%); border-radius:8px}
+  #ui{position:fixed;left:18px;top:18px;color:#c7f0ea; text-shadow:0 0 8px rgba(0,255,213,0.12); z-index:10}
+  #ui .score{font-size:12px; margin-bottom:8px}
+  #panel-right{position:fixed; right:18px; top:18px; color:#e6e6ff; text-align:right; z-index:10}
+  .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.75));z-index:50;backdrop-filter: blur(2px)}
+  .card{background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:2px solid rgba(139,92,246,0.12); padding:28px; border-radius:14px; text-align:center; box-shadow: 0 10px 40px rgba(0,0,0,0.6)}
+  .big{font-size:18px;color:var(--neon1); text-shadow:0 0 14px var(--neon1), 0 0 30px var(--neon2)}
+  button.start{
+    margin-top:14px;padding:12px 18px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--neon1),var(--neon2)); color:#001; font-weight:800; cursor:pointer; box-shadow:0 6px 30px rgba(139,92,246,.2)
+  }
+  .muted{font-size:12px;opacity:.8;color:#a9b0c8}
+  .mini{font-size:11px;color:#cdd7ff; margin-top:8px}
+  .power{display:inline-block;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04); margin:4px; font-size:11px}
+  /* responsive small */
+  @media (max-width:860px){canvas{width:92vw;height:46vw}}
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="score" id="score">Puntaje: 0</div>
+  <div class="muted">año escolar: <span id="level">1</span> • periodos: <span id="lives">3</span></div>
+</div>
+<div id="panel-right">
+  <div class="mini">Normas recogidas:</div>
+  <div id="collected" class="mini">—</div>
+  <div class="mini">Mejor: <span id="best">0</span></div>
+</div>
+
+<div class="center">
+  <canvas id="c" width="960" height="540"></canvas>
+</div>
+
+<!-- Overlay inicio / pause / gameover -->
+<div id="overlayStart" class="overlay">
+  <div class="card">
+    <div class="big">🎮 ZYLKIA 5 — EXPERIENCIA EDUCATIVA GAMER</div>
+    <p class="muted">Un juego pixel histórico: recolecta normas, enfrenta enemigos, derroca jefes. ¡La convivencia se aprende jugando!</p>
+    <button class="start" id="btnStart">INICIAR AVENTURA</button>
+    <div class="mini">Usa Flechas / WASD para moverte • Espacio para Dash</div>
+    <div class="mini" style="margin-top:10px">Talk: <button id="speakWelcome" class="mini">🔊 Bienvenida hablada</button></div>
+  </div>
+</div>
+
+<!-- Hidden audio control / upload -->
+<input id="musicFile" type="file" accept="audio/*" style="position:fixed;left:18px;bottom:18px;z-index:60" />
+<label for="musicFile" style="position:fixed;left:18px;bottom:46px;color:#c7f0ea;font-size:12px">Cargar música (opcional)</label>
+
+<script>
+/* -----------------------------
+   CONFIG - Cambia aquí si quieres
+   ----------------------------- */
+const MUSIC_SRC = "https://cdn.pixabay.com/download/audio/2021/11/04/audio_6c1a7b8fe6.mp3?filename=electronic-game-loop-110095.mp3";
+// (si quieres, reemplaza por 'music/epic.mp3' local o elimina la música)
+const CANVAS = document.getElementById('c');
+const ctx = CANVAS.getContext('2d', { alpha: false });
+const W = CANVAS.width, H = CANVAS.height;
+
+/* GAME STATE */
+let player, enemies = [], collectibles = [], particles = [], powerups = [], boss = null;
+let level = 1, lives = 3, score = 0, best = parseInt(localStorage.getItem('zylkia_best')||'0');
+let collectedList = [];
+let keys = {}, playing = false, lastSpawn = 0, audioCtx, analyser, audioSource, music, freqData;
+document.getElementById('best').textContent = best;
+
+/* UTILS */
+function rand(min,max){ return Math.random()*(max-min)+min }
+function int(n){ return Math.floor(n) }
+
+/* PIXEL DRAW HELPERS (simple pixel sprites) */
+function drawPixelRect(x,y,w,h,col){
+  ctx.fillStyle = col;
+  ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));
+}
+function drawPlayer(p){
+  // pixel-style body
+  drawPixelRect(p.x,p.y,p.w,p.h,p.color);
+  // simple eyes
+  drawPixelRect(p.x + 4, p.y + 4, 3,3, '#000');
+  drawPixelRect(p.x + p.w - 7, p.y + 4, 3,3, '#000');
+}
+
+/* PARTICLES simple */
+function spawnParticles(x,y,c,n=12){
+  for(let i=0;i<n;i++){
+    particles.push({
+      x,y,
+      vx: rand(-2,2),
+      vy: rand(-3,1),
+      life: rand(40,90),
+      col:c,
+      size: rand(1,4)
+    });
+  }
+}
+
+/* INIT */
+function resetGame(){
+  player = { x:50, y:H/2-12, w:22, h:22, col:'#ffee55', color:'#ffee55', speed:4, dash:false, dashTimer:0, inv:0 };
+  enemies = [];
+  collectibles = [];
+  powerups = [];
+  particles = [];
+  boss = null;
+  collectedList = [];
+  score = 0;
+  lives = 3;
+  level = 1;
+  document.getElementById('score').textContent = "Puntaje: "+score;
+  document.getElementById('lives').textContent = lives;
+  document.getElementById('level').textContent = level;
+  document.getElementById('collected').textContent = "—";
+  createLevel(level);
+}
+
+/* CREATE LEVEL (spawns enem/collectibles dynamically) */
+function createLevel(n){
+  enemies = [];
+  collectibles = [];
+  powerups = [];
+  boss = null;
+
+  // spawn base enemies count scales: you can adjust multiplier
+  const baseCount = Math.min(12, 3 + n*1.5);
+  for(let i=0;i<baseCount;i++){
+    spawnEnemy(n);
+  }
+
+  // spawn 1-3 collectibles = normas
+  const normasPorNivel = {
+    1:["Respetar a compañeros","No insultos"],
+    2:["Llegar puntual","Cumplir horarios","respecto a la dignidad"],
+    3:["Cuidar espacios","No dañar propiedad","Asistencia escolar","Higiene personal"],
+    4:["Uniforme correcto","Presentación personal","conocer el manual","No armas","Participacion activa"],
+    5:["Uso responsable de tecnología","No ciberacoso","Reporte de problemas","seguir instruciones","prestar atencion"],
+    6:["no discriminar","No bullying","respeto en evaluaciones","consumo de alimentos","no sustancias psicoativas","uso de la bibloteca"]
+  };
+  const normas = normasPorNivel[n] || ["Norma general: Portarse bien"];
+  for(let i=0;i<normas.length;i++){
+    collectibles.push({
+      x: rand(200, W-120),
+      y: rand(40, H-40),
+      w: 14, h:14,
+      color: '#00ffd5',
+      text: normas[i],
+      pulse: 0
+    });
+  }
+
+  // boss every 5 levels
+  if(n % 5 === 0){
+    createBoss(n);
+  }
+}
+
+/* ENEMY spawn with type/pattern */
+function spawnEnemy(n){
+  const type = int(rand(0,3)); // 0: horiz, 1: vertical, 2: zigzag
+  const speed = 0.6 + rand(0.6, 1.2) + n*0.12;
+  enemies.push({
+    x: rand(200, W-60),
+    y: rand(20, H-40),
+    w: 18, h:18,
+    type,
+    speed,
+    dir: Math.random()>0.5 ? 1 : -1,
+    phase: rand(0, Math.PI*2),
+    color: type===0? '#ff4d6d' : type===1? '#ffb86c' : '#8b5cf6',
+    hp: 1 + Math.floor(n/4)
+  });
+}
+
+/* BOSS */
+function createBoss(n){
+  boss = {
+    x: W - 160, y: H/2 - 70, w:140, h:140,
+    hp: 6 + Math.floor(n/2),
+    phase:0,
+    timer:0
+  };
+}
+
+/* COLLISION */
+function coll(a,b){
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+/* UPDATE LOGIC */
+function update(){
+  if(!playing) return;
+  // music-reactive glow (get average frequency)
+  let freqAvg = 0;
+  if(freqData){
+    let sum=0;
+    for(let i=0;i<freqData.length;i++) sum+=freqData[i];
+    freqAvg = sum / freqData.length / 255; // 0..1
+  }
+
+  // player
+  if(keys.ArrowUp || keys.w) player.y -= player.speed;
+  if(keys.ArrowDown || keys.s) player.y += player.speed;
+  if(keys.ArrowLeft || keys.a) player.x -= player.speed;
+  if(keys.ArrowRight || keys.d) player.x += player.speed;
+
+  // dash (space)
+  if(keys[' ']){
+    player.dash = true;
+    player.dashTimer = 10;
+    player.inv = 12; // inv frames
+    player.x += player.speed * 6;
+  }
+  if(player.dashTimer>0) player.dashTimer--;
+  if(player.inv>0) player.inv--;
+
+  // clamp
+  player.x = Math.max(6, Math.min(W - player.w - 6, player.x));
+  player.y = Math.max(6, Math.min(H - player.h - 6, player.y));
+
+  // enemies movement
+  enemies.forEach(e=>{
+    e.phase += 0.02 + (e.speed/200);
+    if(e.type===0){ // horizontal oscillate
+      e.x += e.speed * e.dir;
+      e.y += Math.sin(e.phase)*1.2;
+    } else if(e.type===1){ // vertical float
+      e.y += e.speed * e.dir;
+      e.x += Math.cos(e.phase)*0.8;
+    } else { // zigzag
+      e.x += Math.cos(e.phase*1.5)*e.speed*1.3;
+      e.y += Math.sin(e.phase*1.2)*e.speed*1.1;
+    }
+    // bounce edges
+    if(e.x < 6 || e.x + e.w > W-6) e.dir *= -1;
+    if(e.y < 6) e.y = 6;
+    if(e.y + e.h > H-6) e.y = H - e.h - 6;
+
+    // collision with player
+    if(coll(e, player) && player.inv<=0){
+      lives--;
+      player.inv = 42;
+      spawnParticles(player.x + player.w/2, player.y + player.h/2, '#ff4d6d', 18);
+      playSfx('hit');
+      document.getElementById('lives').textContent = lives;
+      if(lives <= 0){
+        gameOver();
+      }
+    }
+  });
+
+  // boss behavior
+  if(boss){
+    boss.timer++;
+    boss.phase += 0.01;
+    boss.y += Math.sin(boss.phase)*0.6;
+    if(boss.timer % 90 === 0){
+      // boss fires small enemies / bullets -> spawn small enemies towards player
+      for(let i=0;i<3;i++){
+        enemies.push({
+          x: boss.x + 10 + i*30,
+          y: boss.y + boss.h - 12,
+          w:12, h:12, type:2, speed:2 + level*0.12, dir: -1, phase:0, color:'#ff7b7b', hp:1
+        });
+      }
+      playSfx('boss_shot');
+    }
+    // collision boss-player
+    if(coll(boss, player) && player.inv<=0){
+      lives -= 2;
+      player.inv = 80;
+      spawnParticles(player.x+player.w/2, player.y+player.h/2,'#ff4d6d',28);
+      document.getElementById('lives').textContent = lives;
+      playSfx('hit');
+      if(lives<=0) gameOver();
+    }
+  }
+
+  // collectibles pickup
+  for(let i=collectibles.length-1;i>=0;i--){
+    const c = collectibles[i];
+    c.pulse += 0.05;
+    if(coll(c, player)){
+      score += 15;
+      collectedList.push(c.text);
+      document.getElementById('collected').textContent = collectedList.join(' • ');
+      spawnParticles(c.x+c.w/2, c.y+c.h/2, '#00ffd5', 18);
+      playSfx('collect');
+      collectibles.splice(i,1);
+    }
+  }
+
+  // remove enemies with 0 hp
+  for(let i=enemies.length-1;i>=0;i--){
+    if(enemies[i].hp <= 0) {
+      spawnParticles(enemies[i].x + enemies[i].w/2, enemies[i].y + enemies[i].h/2, '#ffaaff', 12);
+      score += 5;
+      enemies.splice(i,1);
+      playSfx('enemy_die');
+    }
+  }
+
+  // if boss present and no collectibles -> allow damage (player can hit boss by colliding with dash)
+  if(boss){
+    // if player dashed into boss
+    if(player.dash && coll(player, boss) && boss.hp>0){
+      boss.hp--;
+      spawnParticles(boss.x + boss.w/2, boss.y + boss.h/2, '#ffef6b', 28);
+      playSfx('boss_hit');
+      if(boss.hp<=0){
+        playSfx('boss_die');
+        spawnParticles(boss.x + boss.w/2, boss.y + boss.h/2, '#ffffff', 80);
+        boss = null;
+        score += 120;
+        levelUp();
+      }
+    }
+  } else {
+    // level completion: when all collectibles gathered and player reaches right zone
+    if(collectibles.length===0 && player.x > W - 140){
+      levelUp();
+    }
+  }
+
+  // spawn more enemies slowly as level grows
+  if(Date.now() - lastSpawn > Math.max(1000, 4500 - level*150) && enemies.length < (6 + level*1.2)){
+    spawnEnemy(level);
+    lastSpawn = Date.now();
+  }
+
+  // update particles
+  for(let i=particles.length-1;i>=0;i--){
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.life--;
+    if(p.life <= 0) particles.splice(i,1);
+  }
+
+  document.getElementById('score').textContent = "Puntaje: "+score;
+}
+
+/* LEVEL UP */
+function levelUp(){
+  level++;
+  score += 30;
+  document.getElementById('level').textContent = level;
+  playSfx('level_up');
+  // small heal or powerup every 2 levels
+  if(level%2===0){
+    lives = Math.min(5, lives+1);
+    document.getElementById('lives').textContent = lives;
+  }
+  createLevel(level);
+}
+
+/* GAMEOVER */
+function gameOver(){
+  playing = false;
+  playSfx('game_over');
+  // save best
+  if(score > best){ best = score; localStorage.setItem('zylkia_best', String(best)); document.getElementById('best').textContent = best; }
+  // show overlay
+  const ov = document.getElementById('overlayStart');
+  ov.style.display = 'flex';
+  ov.querySelector('.big').textContent = '💀 GAME OVER 💀';
+  ov.querySelector('.muted').textContent = `Tu puntaje: ${score} • Mejor: ${best}`;
+  const btn = ov.querySelector('button.start');
+  btn.textContent = 'REINTENTAR';
+  speakText(`Game Over. Obtuviste ${score} puntos. Mejor ${best}. ¿Reintentas?`);
+}
+
+/* DRAW FRAME */
+function draw(){
+  // background with music reactive gradient
+  ctx.fillStyle = '#050514';
+  ctx.fillRect(0,0,W,H);
+
+  // neon scanlines + music visualization
+  if(freqData){
+    // draw some arcs based on low frequencies
+    let bass = 0;
+    for(let i=0;i<32;i++) bass += freqData[i];
+    bass = bass / 32 / 255;
+    const glow = 30 + Math.min(120, bass*360);
+    ctx.beginPath();
+    let g = ctx.createLinearGradient(0,0,W,H);
+    g.addColorStop(0, "rgba(11,7,30,"+ (0.18 + bass*0.12) +")");
+    g.addColorStop(1, "rgba(2,4,10,"+ (0.6 + bass*0.06) +")");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+  }
+
+  // draw collectibles (normas) with small glow
+  collectibles.forEach(c=>{
+    const pul = 1 + Math.sin(c.pulse)*0.12;
+    const cx = c.x + c.w/2, cy = c.y + c.h/2;
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = c.color;
+    ctx.fillRect(cx-8*pul, cy-8*pul, 16*pul, 16*pul);
+    ctx.restore();
+    // small label
+    ctx.fillStyle = '#dff';
+    ctx.font = '11px monospace';
+    ctx.fillText(c.text, c.x - 2, c.y - 6);
+  });
+
+  // draw enemies
+  enemies.forEach(e=>{
+    ctx.fillStyle = e.color;
+    ctx.fillRect(e.x, e.y, e.w, e.h);
+    // small HP bar
+    if(e.hp > 1){
+      ctx.fillStyle = '#222';
+      ctx.fillRect(e.x, e.y-6, e.w, 4);
+      ctx.fillStyle = '#ff8';
+      ctx.fillRect(e.x, e.y-6, e.w * (e.hp / (1 + Math.floor(level/4))), 4);
+    }
+  });
+
+  // draw boss
+  if(boss){
+    // boss body (pixel big)
+    ctx.fillStyle = '#6633cc';
+    ctx.fillRect(boss.x, boss.y, boss.w, boss.h);
+    // boss eyes
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(boss.x+18, boss.y+30, 12, 12);
+    ctx.fillRect(boss.x + boss.w - 30, boss.y+30, 12, 12);
+    // hp bar
+    ctx.fillStyle = '#222';
+    ctx.fillRect(W/2 - 160, 18, 320, 10);
+    ctx.fillStyle = '#ff5555';
+    ctx.fillRect(W/2 - 160, 18, 320 * (boss.hp / (6 + Math.floor(level/2))), 10);
+  }
+
+  // draw player with slight neon glow
+  ctx.save();
+  if(player.inv % 8 < 4) ctx.globalAlpha = 0.9; else ctx.globalAlpha = 0.5;
+  drawPlayer({x:player.x,y:player.y,w:player.w,h:player.h,color:player.color});
+  ctx.restore();
+
+  // particles
+  particles.forEach(p=>{
+    ctx.fillStyle = p.col;
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+  });
+
+  // HUD corner hints
+  ctx.fillStyle = 'rgba(255,255,255,0.03)';
+  ctx.fillRect(0,H-40,W,40);
+  ctx.fillStyle = '#cce';
+  ctx.font = '12px monospace';
+  ctx.fillText('Derecha para terminar nivel (cuando recojas normas) • Dash → Espacio', 10, H-18);
+}
+
+/* SOUND EFFECTS (tiny beeps using oscillator) */
+function playSfx(name){
+  try{
+    const s = new Audio(); // fallback using short sample via data URI could be added
+  }catch(e){}
+  // fallback to small audio beeps using AudioContext
+  if(!audioCtx) initAudio(); // ensure audio context present
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = name==='hit' ? 'square' : name==='collect' ? 'sine' : 'triangle';
+  if(name==='game_over'){ o.type='sawtooth'; o.frequency.value = 120; }
+  else if(name==='hit') o.frequency.value = 200;
+  else if(name==='collect') o.frequency.value = 880;
+  else if(name==='enemy_die') o.frequency.value = 420;
+  else if(name==='level_up') o.frequency.value = 660;
+  else if(name==='boss_hit') o.frequency.value = 240;
+  else if(name==='boss_die') o.frequency.value = 120;
+  else if(name==='boss_shot') o.frequency.value = 300;
+  g.gain.value = 0.04;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  setTimeout(()=>{ o.stop() }, 130);
+}
+
+/* MUSIC + ANALYSER Setup */
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 512;
+  freqData = new Uint8Array(analyser.frequencyBinCount);
+
+  // create music element
+  music = new Audio();
+  music.crossOrigin = "anonymous";
+  music.loop = true;
+  music.src = MUSIC_SRC; // default
+  music.volume = 0.45;
+
+  audioSource = audioCtx.createMediaElementSource(music);
+  audioSource.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  // start when user interaction
+}
+
+/* VISUAL + LOOP */
+function frame(){
+  update();
+  draw();
+  requestAnimationFrame(frame);
+}
+
+/* START / UI */
+document.getElementById('btnStart').addEventListener('click', ()=>{
+  initAudio();
+  // resume audio context on user gesture
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  if(music && music.paused) music.play();
+  document.getElementById('overlayStart').style.display = 'none';
+  // reset overlay texts back to initial for next time
+  document.querySelector('#overlayStart .big').textContent = '🎮 ZYLKIA 5 — EXPERIENCIA EDUCATIVA GAMER';
+  document.querySelector('#overlayStart .muted').textContent = 'Un juego pixel histórico: recolecta normas, enfrenta enemigos, derroca jefes. ¡La convivencia se aprende jugando!';
+  playing = true;
+  resetGame();
+  speakText('Bienvenido a Zylkia. ¡Comienza la aventura!');
+  frame();
+});
+
+// speak welcome button
+document.getElementById('speakWelcome').addEventListener('click', ()=>{
+  speakText('Bienvenido a la experiencia educativa gamer. No olvidarás esta aventura. ¡Suerte!');
+});
+
+/* speak util */
+function speakText(txt){
+  if('speechSynthesis' in window){
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'es-ES';
+    u.rate = 1;
+    u.pitch = 1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+}
+
+/* keyboard */
+window.addEventListener('keydown', e=>{ keys[e.key] = true; /* prevent page scroll for arrows */ if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault(); });
+window.addEventListener('keyup', e=>{ keys[e.key] = false; });
+
+/* Load local music file (optional) */
+document.getElementById('musicFile').addEventListener('change', function(evt){
+  const f = evt.target.files[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  MUSIC_SRC = url;
+  if(!audioCtx) initAudio();
+  music.src = url;
+  music.play();
+});
+
+/* Prevent context menu for epicness */
+window.addEventListener('contextmenu', e=>e.preventDefault());
+
+/* start audio ctx on first user gesture (click anywhere) */
+window.addEventListener('click', function initOnce(){
+  if(!audioCtx) initAudio();
+  window.removeEventListener('click', initOnce);
+});
+
+/* periodically update freq data */
+setInterval(()=>{ if(analyser) analyser.getByteFrequencyData(freqData); }, 60);
+
+/* small helpers for debugging - expose functions to console */
+window._spawnEnemy = spawnEnemy;
+window._spawnParticles = spawnParticles;
+
+/* initialize display values */
+document.getElementById('score').textContent = "Puntaje: 0";
+document.getElementById('lives').textContent = lives;
+document.getElementById('level').textContent = level;
+document.getElementById('collected').textContent = "—";
+
+</script>
+</body>
+</html>
